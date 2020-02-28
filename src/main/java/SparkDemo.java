@@ -1,5 +1,8 @@
 import static spark.Spark.*;
 
+import builder.ResponseBuilder;
+import builder.ResponseDto;
+import java.util.Date;
 import java.util.Set;
 import spark.Request;
 import spark.Response;
@@ -22,6 +25,10 @@ public class SparkDemo {
   public static void main(String[] args) {
     port(1234);
     // calling get will make your app start listening for the GET path with the /hello endpoint
+    ResponseBuilder builder = new ResponseBuilder()
+      .setDate(new Date())
+      .setName("Hello world");
+    ResponseDto dto = builder.build();
     get("/hello", (req, res) -> "Hello World");
 
     post("/post-handler", (req, res) -> {
@@ -32,7 +39,13 @@ public class SparkDemo {
     // Slightly more advanced routing
     path("/api", () -> {
       get("/users", (req, res) -> {
+        // put more stuff here
         return "This one has a block body";
+      });
+      get("/test", (req, res) -> {
+        System.out.println(req.headers());
+        System.out.println(req.userAgent());
+        return "Worked!";
       });
       get("/posts", SparkDemo::processRoute);
       get("/lambda", (req, res) -> SparkDemo.processRoute(req, res));
